@@ -1,0 +1,11 @@
+services:
+  outfitzblog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - HOSTNAME=0.0.0.0
+    container_name: outfitzblog_new
