@@ -1,4 +1,4 @@
-import { writeFileSync, readFileSync, mkdirSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import GithubSlugger from 'github-slugger';
@@ -8,7 +8,7 @@ import { allBlogs } from '../.contentlayer/generated/index.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Read tag-data.json
+// Read tag-data.json using fs
 const tagData = JSON.parse(
   readFileSync(path.join(__dirname, '../app/tag-data.json'), 'utf-8')
 );
@@ -32,7 +32,6 @@ const generateRssItem = (post) => `
     <description>${escape(post.summary)}</description>
     <pubDate>${new Date(post.date).toUTCString()}</pubDate>
     <author>${siteMetadata.email} (${siteMetadata.author})</author>
-    ${post.tags.map((t) => `<category>${t}</category>`).join('')}
   </item>
 `;
 
@@ -54,13 +53,9 @@ const generateRss = (posts, page = 'feed.xml') => {
   `;
 
   const dir = './public';
-  mkdirSync(dir, { recursive: true });
   writeFileSync(path.join(dir, page), rss);
 };
 
-const main = () => {
-  const posts = sortPosts(allBlogs);
-  generateRss(posts);
+export const generateRssFeed = () => {
+  generateRss(allBlogs);
 };
-
-main();

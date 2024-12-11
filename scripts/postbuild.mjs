@@ -1,4 +1,4 @@
-import generateRssFeed from './rss.mjs'
+import { generateRssFeed } from './rss.mjs';
 
 // Generate RSS feed
-generateRssFeed()
+generateRssFeed();
