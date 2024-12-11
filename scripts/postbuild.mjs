@@ -1,4 +1,4 @@
-import { main as generateRss } from './rss.mjs'
+import generateRssFeed from './rss.mjs'
 
-// Run the RSS generation
-generateRss()
+// Generate RSS feed
+generateRssFeed()
