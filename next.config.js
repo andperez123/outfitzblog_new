@@ -56,42 +56,39 @@ const unoptimized = process.env.UNOPTIMIZED ? true : false;
 module.exports = () => {
   const plugins = [withContentlayer, withBundleAnalyzer];
 
-  return plugins.reduce(
-    (acc, plugin) => plugin(acc),
-    {
-      output: 'standalone',
-      reactStrictMode: true,
-      basePath,
-      pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
-      eslint: {
-        dirs: ['app', 'components', 'layouts', 'scripts'],
-      },
-      images: {
-        remotePatterns: [
-          {
-            protocol: 'https',
-            hostname: 'picsum.photos',
-          },
-        ],
-        unoptimized,
-      },
-      async headers() {
-        return [
-          {
-            source: '/(.*)',
-            headers: securityHeaders,
-          },
-        ];
-      },
-      webpack: (config) => {
-        // Add SVG support with @svgr/webpack
-        config.module.rules.push({
-          test: /\.svg$/,
-          use: ['@svgr/webpack'],
-        });
+  return plugins.reduce((acc, plugin) => plugin(acc), {
+    output: 'standalone',
+    reactStrictMode: true,
+    basePath,
+    pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+    eslint: {
+      dirs: ['app', 'components', 'layouts', 'scripts'],
+    },
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'picsum.photos',
+        },
+      ],
+      unoptimized,
+    },
+    async headers() {
+      return [
+        {
+          source: '/(.*)',
+          headers: securityHeaders,
+        },
+      ];
+    },
+    webpack: (config) => {
+      // Add SVG support with @svgr/webpack
+      config.module.rules.push({
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      });
 
-        return config;
-      },
-    }
-  );
+      return config;
+    },
+  });
 };
