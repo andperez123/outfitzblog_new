@@ -5814,7 +5814,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^5.2.0":
+"eslint-plugin-prettier@npm:^5.2.1":
   version: 5.2.1
   resolution: "eslint-plugin-prettier@npm:5.2.1"
   dependencies:
@@ -11636,7 +11636,7 @@ react@rc:
     eslint: ^9.16.0
     eslint-config-next: 15.0.2
     eslint-config-prettier: ^9.1.0
-    eslint-plugin-prettier: ^5.2.0
+    eslint-plugin-prettier: ^5.2.1
     github-slugger: ^2.0.0
     globals: ^15.12.0
     gray-matter: ^4.0.2
