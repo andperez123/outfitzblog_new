@@ -1,4 +1,4 @@
-import { writeFileSync, readFileSync } from 'fs'
+import { writeFileSync, readFileSync, mkdirSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import GithubSlugger from 'github-slugger'
@@ -15,57 +15,52 @@ const tagData = JSON.parse(
 
 const slugger = new GithubSlugger()
 
-const outputFolder = process.env.EXPORT ? 'out' : 'public'
+// Sort posts by date
+const sortPosts = (posts) => {
+  return posts.sort((a, b) => {
+    const aDate = new Date(a.date)
+    const bDate = new Date(b.date)
+    return bDate - aDate
+  })
+}
 
-const generateRssItem = (config, post) => `
+const generateRssItem = (post) => `
   <item>
-    <guid>${config.siteUrl}/blog/${post.slug}</guid>
+    <guid>${siteMetadata.siteUrl}/blog/${post.slug}</guid>
     <title>${escape(post.title)}</title>
-    <link>${config.siteUrl}/blog/${post.slug}</link>
-    ${post.summary && `<description>${escape(post.summary)}</description>`}
+    <link>${siteMetadata.siteUrl}/blog/${post.slug}</link>
+    <description>${escape(post.summary)}</description>
     <pubDate>${new Date(post.date).toUTCString()}</pubDate>
-    <author>${config.email} (${config.author})</author>
-    ${post.tags && post.tags.map((t) => `<category>${t}</category>`).join('')}
+    <author>${siteMetadata.email} (${siteMetadata.author})</author>
+    ${post.tags.map((t) => `<category>${t}</category>`).join('')}
   </item>
 `
 
-const generateRss = (config, posts, page = 'feed.xml') => `
-  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-      <title>${escape(config.title)}</title>
-      <link>${config.siteUrl}/blog</link>
-      <description>${escape(config.description)}</description>
-      <language>${config.language}</language>
-      <managingEditor>${config.email} (${config.author})</managingEditor>
-      <webMaster>${config.email} (${config.author})</webMaster>
-      <lastBuildDate>${new Date(posts[0].date).toUTCString()}</lastBuildDate>
-      <atom:link href="${config.siteUrl}/${page}" rel="self" type="application/rss+xml"/>
-      ${posts.map((post) => generateRssItem(config, post)).join('')}
-    </channel>
-  </rss>
-`
+const generateRss = (posts, page = 'feed.xml') => {
+  const rss = `
+    <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+      <channel>
+        <title>${escape(siteMetadata.title)}</title>
+        <link>${siteMetadata.siteUrl}/blog</link>
+        <description>${escape(siteMetadata.description)}</description>
+        <language>${siteMetadata.language}</language>
+        <managingEditor>${siteMetadata.email} (${siteMetadata.author})</managingEditor>
+        <webMaster>${siteMetadata.email} (${siteMetadata.author})</webMaster>
+        <lastBuildDate>${new Date(posts[0].date).toUTCString()}</lastBuildDate>
+        <atom:link href="${siteMetadata.siteUrl}/${page}" rel="self" type="application/rss+xml"/>
+        ${posts.map(generateRssItem).join('')}
+      </channel>
+    </rss>
+  `
 
-async function generateRSS(config, allBlogs, page = 'feed.xml') {
-  const publishPosts = allBlogs.filter((post) => post.draft !== true)
-  // RSS for blog post
-  if (publishPosts.length > 0) {
-    const rss = generateRss(config, sortPosts(publishPosts))
-    writeFileSync(`./${outputFolder}/${page}`, rss)
-  }
-
-  if (publishPosts.length > 0) {
-    for (const tag of Object.keys(tagData)) {
-      const filteredPosts = allBlogs.filter((post) => post.tags.map((t) => slugger.slug(t)).includes(tag))
-      const rss = generateRss(config, filteredPosts, `tags/${tag}/${page}`)
-      const rssPath = path.join(outputFolder, 'tags', tag)
-      mkdirSync(rssPath, { recursive: true })
-      writeFileSync(path.join(rssPath, page), rss)
-    }
-  }
+  const dir = './public'
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(path.join(dir, page), rss)
 }
 
-const rss = () => {
-  generateRSS(siteMetadata, allBlogs)
-  console.log('RSS feed generated...')
+const main = () => {
+  const posts = sortPosts(allBlogs)
+  generateRss(posts)
 }
-export default rss
+
+main()
