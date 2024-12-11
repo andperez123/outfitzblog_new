@@ -8,7 +8,7 @@
     "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-vm-modules' node ./scripts/postbuild.mjs",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "lint": "eslint .",
+    "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "prepare": "husky"
   },
@@ -77,6 +77,6 @@
   },
   "packageManager": "yarn@3.6.1",
   "engines": {
-    "node": ">=18.17.0 <19.0.0"
+    "node": "18.x"
   }
 }
