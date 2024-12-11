@@ -1,28 +1,28 @@
-import { writeFileSync, readFileSync, mkdirSync } from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import GithubSlugger from 'github-slugger'
-import { escape } from 'pliny/utils/htmlEscaper.js'
-import siteMetadata from '../data/siteMetadata.js'
-import { allBlogs } from '../.contentlayer/generated/index.mjs'
+import { writeFileSync, readFileSync, mkdirSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import GithubSlugger from 'github-slugger';
+import { escape } from 'pliny/utils/htmlEscaper.js';
+import siteMetadata from '../data/siteMetadata.js';
+import { allBlogs } from '../.contentlayer/generated/index.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Read tag-data.json
 const tagData = JSON.parse(
   readFileSync(path.join(__dirname, '../app/tag-data.json'), 'utf-8')
-)
+);
 
-const slugger = new GithubSlugger()
+const slugger = new GithubSlugger();
 
 // Sort posts by date
 const sortPosts = (posts) => {
   return posts.sort((a, b) => {
-    const aDate = new Date(a.date)
-    const bDate = new Date(b.date)
-    return bDate - aDate
-  })
-}
+    const aDate = new Date(a.date);
+    const bDate = new Date(b.date);
+    return bDate - aDate;
+  });
+};
 
 const generateRssItem = (post) => `
   <item>
@@ -34,7 +34,7 @@ const generateRssItem = (post) => `
     <author>${siteMetadata.email} (${siteMetadata.author})</author>
     ${post.tags.map((t) => `<category>${t}</category>`).join('')}
   </item>
-`
+`;
 
 const generateRss = (posts, page = 'feed.xml') => {
   const rss = `
@@ -51,16 +51,16 @@ const generateRss = (posts, page = 'feed.xml') => {
         ${posts.map(generateRssItem).join('')}
       </channel>
     </rss>
-  `
+  `;
 
-  const dir = './public'
-  mkdirSync(dir, { recursive: true })
-  writeFileSync(path.join(dir, page), rss)
-}
+  const dir = './public';
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(path.join(dir, page), rss);
+};
 
 const main = () => {
-  const posts = sortPosts(allBlogs)
-  generateRss(posts)
-}
+  const posts = sortPosts(allBlogs);
+  generateRss(posts);
+};
 
-main()
+main();
