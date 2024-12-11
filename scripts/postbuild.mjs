@@ -1,7 +1,4 @@
-import rss from './rss.mjs'
+import { main as generateRss } from './rss.mjs'
 
-async function postbuild() {
-  await rss()
-}
-
-postbuild()
+// Run the RSS generation
+generateRss()
